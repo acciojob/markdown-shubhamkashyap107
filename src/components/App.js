@@ -1,32 +1,32 @@
 import React, { useState, useEffect } from 'react';
+import MarkdownEditor from './MarkdownEditor';
 import MarkdownPreview from './MarkdownPreview';
-import './App.css';
+import "../styles/App.css"
 
 const App = () => {
-    const [markdown, setMarkdown] = useState('');
-    const [loading, setLoading] = useState(true);
+  const [markdown, setMarkdown] = useState('');
+  const [html, setHtml] = useState('');
 
-    useEffect(() => {
-        // Simulate a loading time for demonstration
-        const timer = setTimeout(() => setLoading(false), 500);
-        return () => clearTimeout(timer);
-    }, []);
+  useEffect(() => {
+    // Simple markdown to HTML conversion
+    const convertedHtml = markdown
+      .replace(/^# (.*$)/gim, '<h1>$1</h1>') // Headers
+      .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+      .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+      .replace(/\*\*(.*)\*\*/gim, '<strong>$1</strong>') // Bold
+      .replace(/\*(.*)\*/gim, '<em>$1</em>') // Italics
+      .replace(/\n/gim, '<br/>') // Line breaks
+      .replace(/\n\n/gim, '<p></p>'); // Paragraphs
+    
+    setHtml(convertedHtml);
+  }, [markdown]);
 
-    if (loading) {
-        return <div className="loading">Loading...</div>;
-    }
-
-    return (
-        <div className="app">
-            <textarea
-                className="textarea"
-                value={markdown}
-                onChange={(e) => setMarkdown(e.target.value)}
-                placeholder="Write your markdown here..."
-            />
-            <MarkdownPreview markdown={markdown} />
-        </div>
-    );
+  return (
+    <div className="app">
+      <MarkdownEditor markdown={markdown} setMarkdown={setMarkdown} />
+      <MarkdownPreview html={html} />
+    </div>
+  );
 };
 
 export default App;
